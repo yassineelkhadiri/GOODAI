@@ -21,4 +21,4 @@ jobs:
           export PYTHONPATH=$PWD
       - name: Unit tests
         run: |
-          python -m pytest --cov .
+          python -m pytest --cov goodai/tests/unit/
