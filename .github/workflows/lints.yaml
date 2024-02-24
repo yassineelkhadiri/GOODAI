@@ -3,7 +3,7 @@ name: Linters
 on: [push]
 
 jobs:
-  build:
+  Linters:
 
     runs-on: ubuntu-latest
     steps:
