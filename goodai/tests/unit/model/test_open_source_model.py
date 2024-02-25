@@ -19,6 +19,9 @@ def test_query_llm(mock_post, open_source_model: OpenSourceModel):
     mock_post.assert_called_once_with(
         open_source_model.api_url,
         headers=open_source_model.headers,
-        json={"inputs": "Test message", "parameters": {"return_full_text": False}},
+        json={
+            "inputs": open_source_model.prompt_template.format("Test message"),
+            "parameters": {"return_full_text": False},
+        },
     )
     assert response == "Test response"

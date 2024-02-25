@@ -29,9 +29,8 @@ class OpenSourceModel(BaseModel):
             headers=self.headers,
             json={
                 "inputs": self.prompt_template.format(message),
-                # "parameters": {"return_full_text": False}, # Only used for HF Text Generation Models.
+                "parameters": {"return_full_text": False},
             },
         ).json()
-        print(raw_response)
         response = raw_response[0].get("generated_text").strip()
         return response

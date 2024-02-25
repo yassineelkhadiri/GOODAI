@@ -20,4 +20,3 @@ def test_encode(input, expected_type, expected_shape, tokenizer: Tokenizer):
 
     assert isinstance(encoded_vector, expected_type)
     assert encoded_vector.shape == expected_shape
-
