@@ -1,7 +1,7 @@
 import pytest
 from unittest.mock import patch, MagicMock
 
-from goodai.src.model import OpenSourceModel
+from goodai.src.models import OpenSourceModel
 
 
 @pytest.fixture
