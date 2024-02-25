@@ -19,9 +19,10 @@ class MemoryManager:
         self.memory_buffer: List[Memory] = []
         self.tokenizer = Tokenizer()
 
-    def save_memory(self, memory: Memory) -> None:
-        """Save a memory in the local buffer"""
-        self.memory_buffer.append(memory)
+    def save_memory(self, user_input: str) -> None:
+        """Create a memory from user input and save it in the local buffer"""
+        new_memory = Memory(user_input)
+        self.memory_buffer.append(new_memory)
 
     def insert_to_database(self) -> None:
         """

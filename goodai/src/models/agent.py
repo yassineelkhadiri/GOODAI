@@ -1,7 +1,7 @@
 from typing import Union
 
 from goodai.src.models import OpenAIModel, OpenSourceModel
-from goodai.src.memory import MemoryManager, Memory
+from goodai.src.memory import MemoryManager
 
 
 class Agent:
@@ -28,8 +28,7 @@ class Agent:
 
         Returns: LLM response.
         """
-        memory = Memory(user_input=message)
-        self.memory_manager.save_memory(memory)
+        self.memory_manager.save_memory(message)
         llm_reponse = self.model.query_llm(message)
         self.memory_manager.manage()
         return llm_reponse
