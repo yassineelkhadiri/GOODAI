@@ -2,6 +2,7 @@ import os
 import requests
 
 from dotenv import load_dotenv
+from typing import List, Dict
 
 from goodai.src.models.base_model import BaseModel
 
@@ -32,5 +33,9 @@ class OpenSourceModel(BaseModel):
                 "parameters": {"return_full_text": False},
             },
         ).json()
-        response = raw_response[0].get("generated_text").strip()
-        return response
+        return self.format_response(raw_response)
+
+    def format_response(self, raw_response: List[Dict]) -> str:
+        """Retrieve the response of the LLM from raw response."""
+        generated_text = str(raw_response[0].get("generated_text", ""))
+        return generated_text.strip().split("\n")[0]

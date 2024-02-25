@@ -1,7 +1,7 @@
 from typing import Union
 
 from goodai.src.models import OpenAIModel, OpenSourceModel
-from goodai.src.memory.memory import MemoryManager, Memory
+from goodai.src.memory import MemoryManager, Memory
 
 
 class Agent:
