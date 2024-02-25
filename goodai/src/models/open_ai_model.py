@@ -2,7 +2,7 @@ import os
 from dotenv import load_dotenv
 from openai import OpenAI
 
-from goodai.src.model.base_model import BaseModel
+from goodai.src.models.base_model import BaseModel
 
 load_dotenv(".env")
 
