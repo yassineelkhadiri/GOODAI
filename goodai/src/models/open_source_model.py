@@ -36,6 +36,8 @@ class OpenSourceModel(BaseModel):
         return self.format_response(raw_response)
 
     def format_response(self, raw_response: List[Dict]) -> str:
-        """Retrieve the response of the LLM from raw response."""
+        """Retrieve the response of the LLM from its raw response."""
         generated_text = str(raw_response[0].get("generated_text", ""))
-        return generated_text.strip().split("\n")[0]
+        response = generated_text.strip().split("\n")[0]
+        response = response.replace("AI: ", "")
+        return response
