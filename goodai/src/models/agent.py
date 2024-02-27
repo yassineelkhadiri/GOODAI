@@ -28,7 +28,18 @@ class Agent:
 
         Returns: LLM response.
         """
-        self.memory_manager.save_memory(message)
-        llm_reponse = self.model.query_llm(message)
-        self.memory_manager.manage()
+        recent_memories, relevant_memories = self.memory_manager.manage(message)
+        recent_memories_content = [memory.user_input for memory in recent_memories]
+        relevant_memories_content = [memory.user_input for memory in relevant_memories]
+        llm_reponse = self.model.query_llm(
+            message, recent_memories_content, relevant_memories_content
+        )
         return llm_reponse
+
+    def recall_session(self) -> None:
+        """Recall the latest session of the agent."""
+        self.memory_manager.fetch_session()
+
+    def new_session(self) -> None:
+        """Starts a new session with the agent."""
+        self.memory_manager.clear_session()
