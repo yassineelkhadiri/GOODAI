@@ -102,7 +102,7 @@ class MemoryManager:
         )
         return top_5_most_recent_memories[:-1], top_5_related_memories
 
-    def fetch_session(self) -> None:
+    def fetch_session(self) -> Union[List[Memory], List]:
         """Recall the latest session of the agent."""
         latest_memories_in_raw_format = (
             self.conversation_database.fetch_latest_5_memories()
