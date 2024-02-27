@@ -1,11 +1,14 @@
 import logging
-from typing import Any
-from dataclasses import dataclass
-from datetime import datetime, timedelta
 import spacy
 
+from typing import Any, Dict, Optional
+from dataclasses import dataclass
+from datetime import datetime, timedelta
 
-FORMAT = "[%(asctime)s]:[%(levelname)s]: %(message)s"
+import numpy as np
+
+
+FORMAT = "[%(asctime)s]:[%(name)s]:[%(levelname)s]: %(message)s"
 logging.basicConfig(level=logging.INFO, format=FORMAT)
 
 SIMILARITY_THRESHOLD = 0.9
@@ -25,6 +28,7 @@ class Memory:
     """Base class to represent a memory."""
 
     user_input: str
+    encoded_user_input: Optional[np.ndarray]
     memory_type: str = MEMORY_TYPE.NEW
     timestamp: Any = datetime.now()
     expiration: Any = timestamp + timedelta(days=2 * 30)
@@ -52,3 +56,14 @@ class Memory:
 
     def __repr__(self) -> str:
         return f"Memory(content={self.user_input}, memory_type={self.memory_type}, timestamp={self.timestamp}, expiration={self.expiration})"  # noqa:E501
+
+    @classmethod
+    def from_dict(cls, data: Dict):
+        """Creates an instance from a dict."""
+        return cls(
+            user_input=data["metadata"]["user_input"],
+            encoded_user_input=None,
+            memory_type=data["metadata"]["memory_type"],
+            timestamp=data["metadata"]["timestamp"],
+            expiration=data["metadata"]["expiration"],
+        )
