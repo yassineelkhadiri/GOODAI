@@ -36,7 +36,7 @@ class ConversationDatabase:
 
     def retrieve_related_memories(
         self, encoded_memory_vector: List[float], top_k: int = 5
-    ):
+    ) -> Dict:
         """Retrieve examples that are most likely related to the current memory.
 
         Args:
@@ -51,6 +51,11 @@ class ConversationDatabase:
             include_metadata=True,
         )
         return results
+
+    def fetch_latest_5_memories(self) -> Dict:
+        """Collect the latest memories stored in the index."""
+        # TODO: implement logic for fetching the last 5 records.
+        return {}
 
     def clear_records(self) -> None:
         """Delete all records in the current index."""

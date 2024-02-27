@@ -100,8 +100,19 @@ class MemoryManager:
             self._process_memories(top_5_related_memories_in_raw_format),
             key=lambda x: x.timestamp,
         )
+        return top_5_most_recent_memories[:-1], top_5_related_memories
 
-        return top_5_most_recent_memories, top_5_related_memories
+    def fetch_session(self) -> None:
+        """Recall the latest session of the agent."""
+        latest_memories_in_raw_format = (
+            self.conversation_database.fetch_latest_5_memories()
+        )
+        return self._process_memories(latest_memories_in_raw_format)
+
+    def clear_session(self) -> None:
+        """Clears the conversation database of the memory manager."""
+        self.conversation_database.clear_records()
+        self.memory_buffer = []
 
     def _process_memories(
         self, memories_in_raw_format: Dict
@@ -112,12 +123,3 @@ class MemoryManager:
         return [
             Memory.from_dict(memory) for memory in memories_in_raw_format["matches"]
         ]
-
-    def fetch_session(self) -> None:
-        """Recall the latest session of the agent."""
-        pass
-
-    def clear_session(self) -> None:
-        """Clears the conversation database of the memory manager."""
-        self.conversation_database.clear_records()
-        self.memory_buffer = []
