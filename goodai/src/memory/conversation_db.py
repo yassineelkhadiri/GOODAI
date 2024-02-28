@@ -33,11 +33,12 @@ class ConversationDatabase:
             )
 
         self.pinecone_index = self.pinecone_client.Index(self.index_name)
-        logger.info("Connection to database established.")
+        logger.info("Connection to vector database established.")
 
     def upsert_conversations(self, vectors: List[Dict]):
         """Insert a list of vectors in the Pinecone vector database."""
         self.pinecone_index.upsert(vectors)
+        logger.info("Records uploaded to vector database.")
 
     def retrieve_related_memories(
         self, encoded_memory_vector: List[float], top_k: int = 5
@@ -57,11 +58,6 @@ class ConversationDatabase:
         )
         return results
 
-    def fetch_latest_5_memories(self) -> Dict:
-        """Collect the latest memories stored in the index."""
-        # TODO: implement logic for fetching the last 5 records.
-        return {}
-
     def clear_records(self) -> None:
         """Delete all records in the current index."""
         self.pinecone_client.delete_index(self.index_name)
@@ -72,7 +68,6 @@ class ConversationDatabase:
             spec=_SPECS,
         )
         self.pinecone_index = self.pinecone_client.Index(self.index_name)
-
         logger.info("Pinecone records cleared.")
 
 
@@ -86,21 +81,22 @@ class SessionDatabase:
     DATABASE_NAME = "session.db"
 
     def __init__(self):
-        self.databaseb_file_path = os.path.join(
+        self.database_file_path = os.path.join(
             os.path.dirname(__file__), self.CACHE_FOLDER, self.DATABASE_NAME
         )
-        if os.path.exists(self.databaseb_file_path):
-            self.connection = sqlite3.connect(self.DATABASE_NAME)
+        if os.path.exists(self.database_file_path):
+            self.connection = sqlite3.connect(self.database_file_path)
             self.cursor = self.connection.cursor()
         else:
             self.connection, self.cursor = self.create_database()
+        logger.info("connection to session database established.")
 
     def create_database(self) -> Tuple[Connection, Cursor]:
         """Creates the database file in the cache direcotry."""
         os.makedirs(
             os.path.join(os.path.dirname(__file__), self.CACHE_FOLDER), exist_ok=True
         )
-        with sqlite3.connect(self.databaseb_file_path) as conn:
+        with sqlite3.connect(self.database_file_path) as conn:
             create_table_sql = """
                 CREATE TABLE IF NOT EXISTS memories (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
