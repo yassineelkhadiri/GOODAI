@@ -19,7 +19,7 @@ class Agent:
 
     def __del__(self) -> None:
         del self.memory_manager
-        
+
     def interact(self, message: str) -> str:
         """
         Forward user query to the LLM and store the memory in the buffer.
