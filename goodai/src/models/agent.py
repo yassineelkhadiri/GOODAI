@@ -17,6 +17,9 @@ class Agent:
         self.model = model
         self.memory_manager = MemoryManager()
 
+    def __del__(self) -> None:
+        del self.memory_manager
+        
     def interact(self, message: str) -> str:
         """
         Forward user query to the LLM and store the memory in the buffer.
@@ -35,10 +38,6 @@ class Agent:
             message, recent_memories_content, relevant_memories_content
         )
         return llm_reponse
-
-    def recall_session(self) -> None:
-        """Recall the latest session of the agent."""
-        self.memory_manager.fetch_session()
 
     def new_session(self) -> None:
         """Starts a new session with the agent."""

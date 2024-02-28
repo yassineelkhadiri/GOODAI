@@ -1,7 +1,7 @@
 import logging
 import spacy
 
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 
@@ -58,7 +58,7 @@ class Memory:
         return f"Memory(content={self.user_input}, memory_type={self.memory_type}, timestamp={self.timestamp}, expiration={self.expiration})"  # noqa:E501
 
     @classmethod
-    def from_dict(cls, data: Dict):
+    def from_dict(cls, data: Dict) -> "Memory":
         """Creates an instance from a dict."""
         return cls(
             user_input=data["metadata"]["user_input"],
@@ -66,4 +66,15 @@ class Memory:
             memory_type=data["metadata"]["memory_type"],
             timestamp=data["metadata"]["timestamp"],
             expiration=data["metadata"]["expiration"],
+        )
+
+    @classmethod
+    def from_list(cls, data: List[str]) -> "Memory":
+        """Creates an instance from a list."""
+        return cls(
+            user_input=data[1],
+            encoded_user_input=None,
+            memory_type=data[2],
+            timestamp=datetime.strptime(data[3], "%Y-%m-%d %H:%M:%S.%f"),
+            expiration=datetime.strptime(data[4], "%Y-%m-%d %H:%M:%S.%f"),
         )
