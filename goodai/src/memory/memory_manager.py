@@ -27,8 +27,11 @@ class MemoryManager:
         and any memories from the session that are saved in
         the memory_buffer are saved as well.
         """
-        self.insert_to_vector_database()
-        self.insert_to_session_database()
+        try:
+            self.insert_to_vector_database()
+            self.insert_to_session_database()
+        except Exception:
+            pass
 
     @property
     def buffer_is_full(self) -> bool:

@@ -8,7 +8,7 @@ class BaseModel(ABC):
     def __init__(self, model_name: str) -> None:
         self.model_name = model_name
         self.prompts = {
-            "system": "You are an AI chatbot designed to interact with a user and help with them with their requests. Users may interact with you to provide information or ask you about something they already told you, your goal is to help the user and interact with him kindly.",  # noqa:E501
+            "system": "You are an AI chatbot designed to interact with a user and help with them with their requests. Users may interact with you to provide information or ask you about something they already told you, your goal is to help the user and interact with him kindly without any reasoning, if you don't know the answer to a user question simply reply with 'I don't know.'.",  # noqa:E501
             "basic": "User input: {}",
             "recent_memories": "The following are the recent interactions the user had with you: {}",  # noqa: E501
             "relevant_memories": "The following are the relevant interactions the user had with you: {}",  # noqa: E501
