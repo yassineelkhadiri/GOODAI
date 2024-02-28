@@ -36,7 +36,7 @@ class MemoryManager:
     @property
     def buffer_is_full(self) -> bool:
         """Checks if the buffer is full."""
-        return len(self.memory_buffer) > 100
+        return len(self.memory_buffer) > 5
 
     def save_memory(self, new_memory: Memory) -> None:
         """Create a memory from user input and save it in the local buffer"""
@@ -68,7 +68,8 @@ class MemoryManager:
                         },
                     }
                 )
-        self.conversation_database.upsert_conversations(vectors)
+        if vectors:
+            self.conversation_database.upsert_conversations(vectors)
 
     def insert_to_session_database(self) -> None:
         """
@@ -80,6 +81,7 @@ class MemoryManager:
         raw_memories = [
             [
                 memory.user_input,
+                str(memory.encoded_user_input.tolist()),
                 memory.memory_type,
                 memory.timestamp.strftime("%Y-%m-%d %H:%M:%S.%f"),
                 memory.expiration.strftime("%Y-%m-%d %H:%M:%S.%f"),

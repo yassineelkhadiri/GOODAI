@@ -62,7 +62,7 @@ class Memory:
         """Creates an instance from a dict."""
         return cls(
             user_input=data["metadata"]["user_input"],
-            encoded_user_input=None,
+            encoded_user_input=["values"],
             memory_type=data["metadata"]["memory_type"],
             timestamp=data["metadata"]["timestamp"],
             expiration=data["metadata"]["expiration"],
@@ -73,8 +73,8 @@ class Memory:
         """Creates an instance from a list."""
         return cls(
             user_input=data[1],
-            encoded_user_input=None,
-            memory_type=data[2],
-            timestamp=datetime.strptime(data[3], "%Y-%m-%d %H:%M:%S.%f"),
-            expiration=datetime.strptime(data[4], "%Y-%m-%d %H:%M:%S.%f"),
+            encoded_user_input=np.array(eval(data[2])),
+            memory_type=data[3],
+            timestamp=datetime.strptime(data[4], "%Y-%m-%d %H:%M:%S.%f"),
+            expiration=datetime.strptime(data[5], "%Y-%m-%d %H:%M:%S.%f"),
         )

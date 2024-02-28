@@ -53,7 +53,7 @@ class ConversationDatabase:
         results = self.pinecone_index.query(
             vector=encoded_memory_vector,
             top_k=top_k,
-            include_values=False,
+            include_values=True,
             include_metadata=True,
         )
         return results
@@ -101,6 +101,7 @@ class SessionDatabase:
                 CREATE TABLE IF NOT EXISTS memories (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     user_input TEXT,
+                    encoded_user_input TEXT,
                     memory_type TEXT,
                     timestamp TEXT,
                     expiration TEXT
@@ -115,15 +116,18 @@ class SessionDatabase:
         try:
             for memory in memories:
                 self.cursor.execute(
-                    "INSERT INTO memories (user_input, memory_type, timestamp, expiration) VALUES (?, ?, ?, ?)",  # noqa:E501
+                    "INSERT INTO memories (user_input, encoded_user_input, memory_type, timestamp, expiration) VALUES (?, ?, ?, ?, ?)",  # noqa:E501
                     (
                         memory[0],
                         memory[1],
                         memory[2],
                         memory[3],
+                        memory[4],
                     ),
                 )
             self.connection.commit()
+            logger.info("Memories saved in local session database")
+
         except sqlite3.Error:
             logger.error("Error inserting memories to the session database")
 
