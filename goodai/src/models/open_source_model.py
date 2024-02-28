@@ -65,9 +65,6 @@ class OpenSourceModel(BaseModel):
             "recent_memories": recent_memories,
             "relevant_memories": relevant_memories,
         }
-        print(
-            f"prompt: {self.format_prompt(message=message, additional_informations=memories)}"
-        )
         raw_response = requests.post(
             self.api_url,
             headers=self.headers,
@@ -84,6 +81,10 @@ class OpenSourceModel(BaseModel):
         """Retrieve the response of the LLM from its raw response."""
         generated_text = str(raw_response[0].get("generated_text", ""))
         response = generated_text.strip().split("\n")[0]
-        response = response.replace("AI: ", "")
-        response = response.replace("Assistant: ", "")
+        response = (
+            response.replace("AI: ", "")
+            .replace("Assistant: ", "")
+            .replace("Answer: ", "")
+            .replace("Response: ", "")
+        )
         return response

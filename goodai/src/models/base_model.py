@@ -8,10 +8,10 @@ class BaseModel(ABC):
     def __init__(self, model_name: str) -> None:
         self.model_name = model_name
         self.prompts = {
-            "system": "You are an AI chatbot designed to interact with a user and help with them with their requests. Users may interact with you to provide information or ask you about something they already told you, your goal is to help the user and interact with him kindly without any reasoning, if you don't know the answer to a user question simply reply with 'I don't know.'.",  # noqa:E501
-            "basic": "User input: {}",
-            "recent_memories": "The following are the recent interactions the user had with you: {}",  # noqa: E501
-            "relevant_memories": "The following are the relevant interactions the user had with you: {}",  # noqa: E501
+            "system": "You are an AI chatbot designed to interact with a user and help them with their requests. Users may interact with you to provide information or ask you about something they already told you. Your goal is to help the user and interact with them kindly. Please respond only based on the input you receive from the user. If you don't know the answer to a user question, simply reply with 'I don't know.'.",  # noqa:E501
+            "basic": "And this is the user input: {}",
+            "recent_memories": "These are recent interactions the user had with you: {}",  # noqa: E501
+            "relevant_memories": "These are the most relevant interactions to the provided user input: {}",  # noqa: E501
         }
 
     @abstractmethod
