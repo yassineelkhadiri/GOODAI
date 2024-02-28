@@ -2,7 +2,7 @@ from collections import Counter
 import logging
 import spacy
 
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 
@@ -29,7 +29,7 @@ class Memory:
     """Base class to represent a memory."""
 
     user_input: str
-    encoded_user_input: Optional[np.ndarray]
+    encoded_user_input: np.ndarray = []
     memory_type: str = MEMORY_TYPE.NEW
     timestamp: Any = datetime.now()
     expiration: Any = timestamp + timedelta(days=2 * 30)
