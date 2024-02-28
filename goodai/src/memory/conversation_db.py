@@ -150,5 +150,7 @@ class SessionDatabase:
         try:
             self.cursor.execute("DELETE FROM memories")
             self.connection.commit()
+            logger.info("Cleared session database.")
+
         except sqlite3.Error:
             logger.error("Error deleting rows from session database.")
