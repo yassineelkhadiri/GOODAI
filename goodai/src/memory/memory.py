@@ -1,3 +1,4 @@
+from collections import Counter
 import logging
 import spacy
 
@@ -11,7 +12,7 @@ import numpy as np
 FORMAT = "[%(asctime)s]:[%(name)s]:[%(levelname)s]: %(message)s"
 logging.basicConfig(level=logging.INFO, format=FORMAT)
 
-SIMILARITY_THRESHOLD = 0.9
+SIMILARITY_THRESHOLD = 0.85
 nlp = spacy.load("en_core_web_md")
 
 
@@ -36,7 +37,8 @@ class Memory:
     def __eq__(self, other: object) -> bool:
         """
         Check if a given memory is the same as the current instance
-        in order to determine if a memory is dupliacted or not.
+        in order to determine if a memory is dupliacted or not
+        by weighing the context similary and the token similarity.
 
         Args:
             other: Memory to compare with.
@@ -49,10 +51,20 @@ class Memory:
         if not isinstance(other, Memory):
             raise ValueError("Operation not supported.")
         else:
+            current_tokens = self.user_input.split()
+            other_tokens = other.user_input.split()
+            intersection_count = sum(
+                (Counter(current_tokens) & Counter(other_tokens)).values()
+            )
             current_memory_doc = nlp(self.user_input)
             other_memory_doc = nlp(other.user_input)
-            similarity = current_memory_doc.similarity(other_memory_doc)
-            return similarity >= SIMILARITY_THRESHOLD
+            context_similarity = current_memory_doc.similarity(other_memory_doc)
+
+            token_similarity = intersection_count / max(
+                len(current_tokens), len(other_tokens)
+            )
+            weighted_similarity = 0.7 * context_similarity + 0.3 * token_similarity
+            return weighted_similarity >= SIMILARITY_THRESHOLD
 
     def __repr__(self) -> str:
         return f"Memory(content={self.user_input}, memory_type={self.memory_type}, timestamp={self.timestamp}, expiration={self.expiration})"  # noqa:E501
@@ -62,10 +74,14 @@ class Memory:
         """Creates an instance from a dict."""
         return cls(
             user_input=data["metadata"]["user_input"],
-            encoded_user_input=["values"],
+            encoded_user_input=np.array(data["values"]),
             memory_type=data["metadata"]["memory_type"],
-            timestamp=data["metadata"]["timestamp"],
-            expiration=data["metadata"]["expiration"],
+            timestamp=datetime.strptime(
+                data["metadata"]["timestamp"], "%Y-%m-%d %H:%M:%S.%f"
+            ),
+            expiration=datetime.strptime(
+                data["metadata"]["expiration"], "%Y-%m-%d %H:%M:%S.%f"
+            ),
         )
 
     @classmethod
