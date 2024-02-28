@@ -65,6 +65,9 @@ class OpenSourceModel(BaseModel):
             "recent_memories": recent_memories,
             "relevant_memories": relevant_memories,
         }
+        print(
+            f"prompt: {self.format_prompt(message=message, additional_informations=memories)}"
+        )
         raw_response = requests.post(
             self.api_url,
             headers=self.headers,
