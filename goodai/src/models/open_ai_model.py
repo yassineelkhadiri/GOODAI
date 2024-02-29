@@ -25,7 +25,7 @@ class OpenAIModel(BaseModel):
 
         Returns: Formatted prompt.
         """
-        prompt_content = [self.prompts["basic"].format(message)]
+        prompt_content = [self.prompts["user_input"].format(message)]
         recent_memories = additional_informations.get("recent_memories", [])
         relevant_memories = additional_informations.get("relevant_memories", [])
         if recent_memories and relevant_memories:

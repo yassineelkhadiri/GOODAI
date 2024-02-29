@@ -28,7 +28,10 @@ class OpenSourceModel(BaseModel):
 
         Returns: Formatted prompt.
         """
-        prompt_content = [self.prompts["system"], self.prompts["basic"].format(message)]
+        prompt_content = [
+            self.prompts["system"],
+            self.prompts["user_input"].format(message),
+        ]
         recent_memories = additional_informations.get("recent_memories", [])
         relevant_memories = additional_informations.get("relevant_memories", [])
         if recent_memories and relevant_memories:
@@ -75,6 +78,7 @@ class OpenSourceModel(BaseModel):
                 "parameters": {"return_full_text": False},
             },
         ).json()
+        print(raw_response)
         return self.format_response(raw_response)
 
     def format_response(self, raw_response: List[Dict]) -> str:
