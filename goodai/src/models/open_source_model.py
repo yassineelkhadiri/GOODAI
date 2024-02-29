@@ -69,9 +69,6 @@ class OpenSourceModel(BaseModel):
             "recent_memories": recent_memories,
             "relevant_memories": relevant_memories,
         }
-        print(
-            self.format_prompt(message=message, additional_informations=memories),
-        )
         raw_response = requests.post(
             self.api_url,
             headers=self.headers,
@@ -82,14 +79,35 @@ class OpenSourceModel(BaseModel):
                 "parameters": {"return_full_text": False},
             },
         ).json()
-        return self.format_response(raw_response)
+        return OpenSourceModel.format_response(raw_response)
 
-    def format_response(self, raw_response: List[Dict]) -> str:
+    @staticmethod
+    def extract_response(generated_text: str) -> str:
+        response_match = re.search(r'response:\s*(.*)', generated_text, re.IGNORECASE)
+        if response_match:
+            return response_match.group(1).strip()
+        return generated_text
+
+    @staticmethod
+    def remove_prefixes(response: str) -> str:
+        prefixes = ["AI:", "Assistant:", "Answer:", "Response:"]
+        for prefix in prefixes:
+            response = response.replace(prefix, "").strip()
+        return response
+
+    @staticmethod
+    def extract_based_response(response: str) -> str:
+        if response.startswith("Based") and "should be:" in response:
+            return response.split("should be:")[1].strip()
+        if response.startswith("Based") and "would be:" in response:
+            return response.split("would be:")[1].strip()
+        return response
+
+    @staticmethod
+    def format_response(raw_response: List[Dict]) -> str:
         """Retrieve the response of the LLM from its raw response."""
         generated_text = str(raw_response[0].get("generated_text", ""))
-        response = generated_text.strip().split("\n")[0]
-        response = re.sub(r"AI:|Assistant:|Answer:|Response:", "", response).strip()
-        match = re.search(r"(?:should|would) be:(.*)", response)
-        if match:
-            return match.group(1).strip()
+        response = OpenSourceModel.extract_response(generated_text)
+        response = OpenSourceModel.remove_prefixes(response)
+        response = OpenSourceModel.extract_based_response(response)
         return response
