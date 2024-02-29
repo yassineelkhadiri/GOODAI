@@ -1,12 +1,14 @@
 import os
 import logging
 import sqlite3
+import numpy as np
 
 from sqlite3 import Connection, Cursor
 from typing import Any, Dict, List, Tuple
-
 from pinecone import Pinecone, ServerlessSpec
 from dotenv import load_dotenv
+from sklearn.metrics.pairwise import cosine_similarity
+
 
 load_dotenv(".env")
 logger = logging.getLogger()
@@ -19,9 +21,10 @@ _SPECS = ServerlessSpec(cloud="aws", region="us-west-2")
 
 class ConversationDatabase:
     """
-    THIS IMPLEMENTATION IS OBSELETE BUT KEPT 
+    THIS IMPLEMENTATION IS OBSELETE BUT KEPT
     FOR FURTHER INVESTIGATION ON HOW TO OPTIMIZE IT.
     """
+
     """A class representation of a database storing all records."""
 
     def __init__(self, index_name: str = "conversations") -> None:
@@ -77,8 +80,8 @@ class ConversationDatabase:
 
 class SessionDatabase:
     """
-    A simple sqlite database to store the latest records
-    to be used to retrieve the latest interactions.
+    A simple sqlite database to store all
+    interactions between the user and the agent.
     """
 
     CACHE_FOLDER = "cache"
@@ -134,6 +137,47 @@ class SessionDatabase:
 
         except sqlite3.Error:
             logger.error("Error inserting memories to the session database")
+
+    def fetch_most_relevant_memories(
+        self, encoded_memory: np.ndarray, number_of_records=5
+    ) -> List[Any]:
+        """
+        Fetch all memories and computes the distance between
+        the stored memory and an encoded memory content.
+
+        Args:
+            encoded_memory: Embeddings of the memory.
+            number_of_records: Number of records to return..
+
+        Returns: 'number_of_records' memories that are most relevant to the given input.
+        """
+        try:
+            self.cursor.execute("SELECT * FROM memories ORDER BY timestamp")
+            all_memories = self.cursor.fetchall()
+            if not all_memories:
+                return []
+            all_memories_encoded = np.array(
+                [eval(memory[2]) for memory in all_memories]
+            )
+            similarities = np.squeeze(
+                cosine_similarity(encoded_memory.reshape(1, -1), all_memories_encoded)
+            ).tolist()
+            pairs = [
+                (similarity, index)
+                for similarity, index in zip(similarities, range(len(similarities)))
+            ]
+            pairs_sorted = sorted(pairs, key=lambda x: x[0], reverse=True)
+            top_pairs = []
+            for _, index in pairs_sorted:
+                top_pairs.append(index)
+                if len(top_pairs) >= number_of_records:
+                    break
+            return [all_memories[index] for index in top_pairs]
+        except sqlite3.Error:
+            logger.error(
+                "Error fetching most recent memories from the session database."
+            )
+            return []
 
     def fetch_most_recent_memories(self, num_records: int = 5) -> List[Any]:
         """Fetch the most recent memories from the database."""

@@ -12,12 +12,12 @@ import numpy as np
 FORMAT = "[%(asctime)s]:[%(name)s]:[%(levelname)s]: %(message)s"
 logging.basicConfig(level=logging.INFO, format=FORMAT)
 
-SIMILARITY_THRESHOLD = 0.85
+SIMILARITY_THRESHOLD = 0.8
 nlp = spacy.load("en_core_web_md")
 
 
 class MEMORY_TYPE:
-    DUPLICATED = "duplicated"
+    DUPLICATE = "duplicate"
     CONTRADICTORY = "contradictory"
     TEMPORARY = "temporary"
     EPISODIC = "episodic"
@@ -33,6 +33,11 @@ class Memory:
     memory_type: str = MEMORY_TYPE.NEW
     timestamp: Any = datetime.now()
     expiration: Any = timestamp + timedelta(days=2 * 30)
+
+    @property
+    def is_duplicate(self) -> bool:
+        """Checks if a memory is duplicated."""
+        return self.memory_type == MEMORY_TYPE.DUPLICATE
 
     def __eq__(self, other: object) -> bool:
         """
@@ -63,7 +68,7 @@ class Memory:
             token_similarity = intersection_count / max(
                 len(current_tokens), len(other_tokens)
             )
-            weighted_similarity = 0.7 * context_similarity + 0.3 * token_similarity
+            weighted_similarity = 0.6 * context_similarity + 0.4 * token_similarity
             return weighted_similarity >= SIMILARITY_THRESHOLD
 
     def __repr__(self) -> str:
