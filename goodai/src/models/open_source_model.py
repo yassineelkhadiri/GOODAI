@@ -83,7 +83,7 @@ class OpenSourceModel(BaseModel):
 
     @staticmethod
     def extract_response(generated_text: str) -> str:
-        response_match = re.search(r'response:\s*(.*)', generated_text, re.IGNORECASE)
+        response_match = re.search(r"response:\s*(.*)", generated_text, re.IGNORECASE)
         if response_match:
             return response_match.group(1).strip()
         return generated_text
