@@ -3,7 +3,7 @@ import logging
 
 from typing import List, Dict, Union, Tuple
 
-from goodai.src.memory.conversation_db import ConversationDatabase, SessionDatabase
+from goodai.src.memory.conversation_db import SessionDatabase
 from goodai.src.memory.memory import Memory, MEMORY_TYPE
 
 from goodai.src.models.tokenizer import Tokenizer
@@ -15,7 +15,6 @@ class MemoryManager:
     """Class responsible for managing memories."""
 
     def __init__(self) -> None:
-        self.conversation_database = ConversationDatabase()
         self.session_database = SessionDatabase()
         self.tokenizer = Tokenizer()
         self.memory_buffer: List[Memory] = self.fetch_session()
@@ -68,8 +67,6 @@ class MemoryManager:
                         },
                     }
                 )
-        if vectors:
-            self.conversation_database.upsert_conversations(vectors)
 
     def insert_to_session_database(self) -> None:
         """
@@ -119,17 +116,17 @@ class MemoryManager:
 
         top_5_most_recent_memories = self.memory_buffer[-5:]
 
-        top_5_related_memories_in_raw_format = (
-            self.conversation_database.retrieve_related_memories(
-                encoded_user_input.tolist(), top_k=5
-            )
-        )
+        # top_5_related_memories_in_raw_format = (
+        #     self.conversation_database.retrieve_related_memories(
+        #         encoded_user_input.tolist(), top_k=5
+        #     )
+        # )
 
-        top_5_related_memories = sorted(
-            self._process_memories_in_dict(top_5_related_memories_in_raw_format),
-            key=lambda x: x.timestamp,
-        )
-        return top_5_most_recent_memories[:-1], top_5_related_memories
+        # top_5_related_memories = sorted(
+        #     self._process_memories_in_dict(top_5_related_memories_in_raw_format),
+        #     key=lambda x: x.timestamp,
+        # )
+        # return top_5_most_recent_memories[:-1], top_5_related_memories
 
     def fetch_session(self) -> Union[List[Memory], List]:
         """Recall the latest session of the agent."""
@@ -140,7 +137,6 @@ class MemoryManager:
 
     def clear_session(self) -> None:
         """Clears both conversation and session databases of the memory manager."""
-        self.conversation_database.clear_records()
         self.session_database.clear_database()
         self.memory_buffer = []
 

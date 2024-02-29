@@ -18,6 +18,10 @@ _SPECS = ServerlessSpec(cloud="aws", region="us-west-2")
 
 
 class ConversationDatabase:
+    """
+    THIS IMPLEMENTATION IS OBSELETE BUT KEPT 
+    FOR FURTHER INVESTIGATION ON HOW TO OPTIMIZE IT.
+    """
     """A class representation of a database storing all records."""
 
     def __init__(self, index_name: str = "conversations") -> None:
