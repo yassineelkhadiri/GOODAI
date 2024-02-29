@@ -1,4 +1,5 @@
 import os
+import re
 import requests
 
 from dotenv import load_dotenv
@@ -68,6 +69,9 @@ class OpenSourceModel(BaseModel):
             "recent_memories": recent_memories,
             "relevant_memories": relevant_memories,
         }
+        print(
+            self.format_prompt(message=message, additional_informations=memories),
+        )
         raw_response = requests.post(
             self.api_url,
             headers=self.headers,
@@ -78,17 +82,14 @@ class OpenSourceModel(BaseModel):
                 "parameters": {"return_full_text": False},
             },
         ).json()
-        print(raw_response)
         return self.format_response(raw_response)
 
     def format_response(self, raw_response: List[Dict]) -> str:
         """Retrieve the response of the LLM from its raw response."""
         generated_text = str(raw_response[0].get("generated_text", ""))
         response = generated_text.strip().split("\n")[0]
-        response = (
-            response.replace("AI: ", "")
-            .replace("Assistant: ", "")
-            .replace("Answer: ", "")
-            .replace("Response: ", "")
-        )
+        response = re.sub(r"AI:|Assistant:|Answer:|Response:", "", response).strip()
+        match = re.search(r"(?:should|would) be:(.*)", response)
+        if match:
+            return match.group(1).strip()
         return response
