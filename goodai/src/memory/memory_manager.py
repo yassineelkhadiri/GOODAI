@@ -3,7 +3,7 @@ import logging
 from typing import List, Dict, Union, Tuple
 
 from goodai.src.memory.conversation_db import SessionDatabase
-from goodai.src.memory.memory import Memory, MEMORY_TYPE
+from goodai.src.memory.memory import Memory
 
 from goodai.src.models.tokenizer import Tokenizer
 
