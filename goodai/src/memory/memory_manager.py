@@ -46,10 +46,8 @@ class MemoryManager:
             for memory in self.memory_buffer:
                 if new_memory == memory:
                     logger.warn("Duplicated memory found.")
-                    new_memory.memory_type == MEMORY_TYPE.DUPLICATE
-                    break
-            if not memory.is_duplicate:
-                self.memory_buffer.append(new_memory)
+                    self.memory_buffer.remove(memory)
+            self.memory_buffer.append(new_memory)
 
     def insert_to_session_database(self) -> None:
         """
