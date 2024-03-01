@@ -14,7 +14,7 @@ And this is the user input: {}
 """
 
 RECENT_MEMORIES_PROMPT = """
-These are recent interactions the user had with you: {}
+These are recent interactions the user had with you ordered from older to newer: {}
 """
 
 RELEVANT_MEMORIES_PROMPT = """

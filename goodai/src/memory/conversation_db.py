@@ -159,9 +159,15 @@ class SessionDatabase:
             all_memories_encoded = np.array(
                 [eval(memory[2]) for memory in all_memories]
             )
+            reshaped_encoded_memory = encoded_memory.reshape(1, -1)
+
             similarities = np.squeeze(
-                cosine_similarity(encoded_memory.reshape(1, -1), all_memories_encoded)
-            ).tolist()
+                cosine_similarity(reshaped_encoded_memory, all_memories_encoded)
+            )
+            if np.ndim(similarities) == 0:
+                similarities = [similarities]
+            else:
+                similarities = similarities.tolist()
             pairs = [
                 (similarity, index)
                 for similarity, index in zip(similarities, range(len(similarities)))
