@@ -18,7 +18,7 @@ class OpenSourceModel(BaseModel):
         self.api_key = os.getenv("HUGGING_FACE_API_KEY")
         self.headers = {"Authorization": f"Bearer {self.api_key}"}
 
-    def format_prompt(
+    def _format_prompt(
         self, message: str, additional_informations: Dict[str, List[str]]
     ) -> str:
         """Prepare the prompt of the LLM.
@@ -73,7 +73,7 @@ class OpenSourceModel(BaseModel):
             self.api_url,
             headers=self.headers,
             json={
-                "inputs": self.format_prompt(
+                "inputs": self._format_prompt(
                     message=message, additional_informations=memories
                 ),
                 "parameters": {"return_full_text": False},

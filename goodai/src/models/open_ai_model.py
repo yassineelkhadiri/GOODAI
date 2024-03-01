@@ -14,7 +14,7 @@ class OpenAIModel(BaseModel):
         super().__init__(model_name)
         self.client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-    def format_prompt(
+    def _format_prompt(
         self, message: str, additional_informations: Dict[str, List[str]]
     ) -> str:
         """Prepare the prompt of the LLM.
@@ -65,7 +65,7 @@ class OpenAIModel(BaseModel):
         messages = [
             {"system": self.prompts["system"]},
             {
-                "user": self.format_prompt(
+                "user": self._format_prompt(
                     message=message, additional_informations=memories
                 )
             },

@@ -20,7 +20,7 @@ def test_query_llm(mock_post, open_source_model: OpenSourceModel):
         open_source_model.api_url,
         headers=open_source_model.headers,
         json={
-            "inputs": open_source_model.format_prompt("Test message", {}),
+            "inputs": open_source_model._format_prompt("Test message", {}),
             "parameters": {"return_full_text": False},
         },
     )

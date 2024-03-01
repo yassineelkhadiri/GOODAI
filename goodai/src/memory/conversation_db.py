@@ -95,10 +95,10 @@ class SessionDatabase:
             self.connection = sqlite3.connect(self.database_file_path)
             self.cursor = self.connection.cursor()
         else:
-            self.connection, self.cursor = self.create_database()
+            self.connection, self.cursor = self._create_database()
         logger.info("connection to session database established.")
 
-    def create_database(self) -> Tuple[Connection, Cursor]:
+    def _create_database(self) -> Tuple[Connection, Cursor]:
         """Creates the database file in the cache direcotry."""
         os.makedirs(
             os.path.join(os.path.dirname(__file__), self.CACHE_FOLDER), exist_ok=True

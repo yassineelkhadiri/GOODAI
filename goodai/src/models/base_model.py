@@ -22,7 +22,7 @@ class BaseModel(ABC):
         }
 
     @abstractmethod
-    def format_prompt(
+    def _format_prompt(
         self, message: str, additional_information: Dict[str, List[str]]
     ) -> str:
         pass
