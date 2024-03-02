@@ -10,7 +10,7 @@ class Agent:
     An agent has two main attributes:
         - An LLM to interact with.
         - A memory manage to manage the memories
-            stored localy and in the vector database.
+            that handles the interactions.
     """
 
     def __init__(self, model: Union[OpenAIModel, OpenSourceModel]) -> None:
@@ -24,7 +24,7 @@ class Agent:
         """
         Forward user query to the LLM and store the memory in the buffer.
         Perform a check on whether the memory buffer is full
-        to push the changes to the distant database.
+        to push the changes to the session database.
 
         Args:
             message: User's input

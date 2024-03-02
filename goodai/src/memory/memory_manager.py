@@ -21,9 +21,7 @@ class MemoryManager:
     def __del__(self) -> None:
         """
         This is added to insure that any memories left
-        in the buffer are uploaded to the Pinecone Database
-        and any memories from the session that are saved in
-        the memory_buffer are saved as well.
+        in the buffer are saved in the session database.
         """
         try:
             self._insert_to_session_database()
@@ -37,7 +35,7 @@ class MemoryManager:
         This includes:
             - Adding new memory to local buffer.
             - Fetching the latest 10 memories from the local buffer.
-            - Fetching the top 10 most related memories stored in the Pinecone database.
+            - Fetching the top 10 most related memories stored in the session database.
 
         Args:
             user_input: user input to the LLM.
@@ -65,7 +63,7 @@ class MemoryManager:
         return top_10_most_recent_memories, top_10_related_memories
 
     def clear_session(self) -> None:
-        """Clears both conversation and session databases of the memory manager."""
+        """Clears session databases of the memory manager."""
         self.session_database.clear_database()
         self.memory_buffer = []
 
@@ -73,7 +71,8 @@ class MemoryManager:
         """
         Create a memory from user input and
         check if the new memory is a duplicate
-        if the new memory is a duplicate then it is discarded
+        if the new memory is a duplicate then 
+        the older memory is  discarded
         otherwise it is saved in the local buffer
 
         Args:
