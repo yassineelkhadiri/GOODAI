@@ -1,16 +1,16 @@
-from collections import Counter
 import logging
 import spacy
-
-from typing import Any, Dict, List
-from dataclasses import dataclass
-from datetime import datetime, timedelta
-
 import numpy as np
+
+from collections import Counter
+from dataclasses import dataclass
+from datetime import datetime
+from typing import Any, Dict, List
 
 
 FORMAT = "[%(asctime)s]:[%(name)s]:[%(levelname)s]: %(message)s"
 logging.basicConfig(level=logging.INFO, format=FORMAT)
+logging.getLogger("sentence_transformers").setLevel(logging.ERROR)
 
 SIMILARITY_THRESHOLD = 0.8
 nlp = spacy.load("en_core_web_md")
@@ -30,9 +30,9 @@ class Memory:
 
     user_input: str
     encoded_user_input: np.ndarray
-    memory_type: str = MEMORY_TYPE.NEW
-    timestamp: Any = datetime.now()
-    expiration: Any = timestamp + timedelta(days=2 * 30)
+    memory_type: str
+    timestamp: Any
+    expiration: Any
 
     @property
     def is_duplicate(self) -> bool:
