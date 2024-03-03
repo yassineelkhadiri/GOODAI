@@ -101,14 +101,17 @@ class OpenSourceModel(BaseModel):
 
     @staticmethod
     def extract_based_response(response: str) -> str:
-        if response.startswith("Based") and "should be:" in response:
-            return response.split("should be:")[1].strip()
-        if response.startswith("Based") and "would be:" in response:
-            return response.split("would be:")[1].strip()
-        if response.startswith("Based") and "response" in response:
-            return response.split("response is:")[1].strip()
-        if response.startswith("Based") and "responds" in response:
-            return response.split("responds:")[1].strip()
+        prefix = "Based"
+        keywords = [
+            "should be:",
+            "would be:",
+            "response is:",
+            "responds:",
+            "respond with:",
+        ]
+        for keyword in keywords:
+            if prefix in response and keyword in response:
+                return response.split(keyword)[1].strip()
         return response
 
     @staticmethod

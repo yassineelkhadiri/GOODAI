@@ -37,7 +37,11 @@ class Agent:
         llm_reponse = self.model.query_llm(
             message, recent_memories_content, relevant_memories_content
         )
-        return llm_reponse
+        # This is added to remove any memories from the llm response.
+        for element in set(recent_memories_content + relevant_memories_content):
+            if element in llm_reponse:
+                llm_reponse = llm_reponse.replace(element, "")
+        return llm_reponse.strip()
 
     def new_session(self) -> None:
         """Starts a new session with the agent."""
