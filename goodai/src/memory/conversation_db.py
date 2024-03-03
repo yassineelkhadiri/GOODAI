@@ -94,7 +94,7 @@ class SessionDatabase:
             self.cursor = self.connection.cursor()
         else:
             self.connection, self.cursor = self._create_database()
-        logger.info("connection to session database established.")
+        logger.info("Connection to session database established.")
 
     def _create_database(self) -> Tuple[Connection, Cursor]:
         """Creates the database file in the cache direcotry."""
