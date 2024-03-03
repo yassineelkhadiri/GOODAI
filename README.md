@@ -59,3 +59,4 @@ To start an interaction with the `agent` or you can simply run
 Alternatively, you can refer to the notebooks:
 - [Duplicated memory](duplicate.ipynb)
 - [Episodic memory](episodic.ipynb)
+- [Temporary memory](temporary.ipynb)
