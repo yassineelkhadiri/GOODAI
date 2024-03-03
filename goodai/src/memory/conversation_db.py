@@ -1,13 +1,11 @@
 import os
 import logging
 import sqlite3
-import numpy as np
 
 from sqlite3 import Connection, Cursor
 from typing import Any, Dict, List, Tuple
 from pinecone import Pinecone, ServerlessSpec
 from dotenv import load_dotenv
-from sklearn.metrics.pairwise import cosine_similarity
 
 
 load_dotenv(".env")
@@ -138,61 +136,12 @@ class SessionDatabase:
         except sqlite3.Error:
             logger.error("Error inserting memories to the session database")
 
-    def fetch_most_relevant_memories(
-        self, encoded_memory: np.ndarray, number_of_records=5
-    ) -> List[Any]:
-        """
-        Fetch all memories and computes the distance between
-        the stored memory and an encoded memory content.
-
-        Args:
-            encoded_memory: Embeddings of the memory.
-            number_of_records: Number of records to return..
-
-        Returns: 'number_of_records' memories that are most relevant to the given input.
-        """
+    def get_all_memories(self) -> List[Any]:
+        """Fetch all memories stored in the session database."""
         try:
             self.cursor.execute("SELECT * FROM memories ORDER BY timestamp")
             all_memories = self.cursor.fetchall()
-            if not all_memories:
-                return []
-            all_memories_encoded = np.array(
-                [eval(memory[2]) for memory in all_memories]
-            )
-            reshaped_encoded_memory = encoded_memory.reshape(1, -1)
-
-            similarities = np.squeeze(
-                cosine_similarity(reshaped_encoded_memory, all_memories_encoded)
-            )
-            if np.ndim(similarities) == 0:
-                similarities = [similarities]
-            else:
-                similarities = similarities.tolist()
-            pairs = [
-                (similarity, index)
-                for similarity, index in zip(similarities, range(len(similarities)))
-            ]
-            pairs_sorted = sorted(pairs, key=lambda x: x[0], reverse=True)
-            top_pairs = []
-            for _, index in pairs_sorted:
-                top_pairs.append(index)
-                if len(top_pairs) >= number_of_records:
-                    break
-            return [all_memories[index] for index in top_pairs]
-        except sqlite3.Error:
-            logger.error(
-                "Error fetching most recent memories from the session database."
-            )
-            return []
-
-    def fetch_most_recent_memories(self, num_records: int = 5) -> List[Any]:
-        """Fetch the most recent memories from the database."""
-        try:
-            self.cursor.execute(
-                f"SELECT * FROM memories ORDER BY timestamp DESC LIMIT {num_records}"
-            )
-            recent_memories = self.cursor.fetchall()
-            return recent_memories
+            return all_memories
         except sqlite3.Error:
             logger.error(
                 "Error fetching most recent memories from the session database."

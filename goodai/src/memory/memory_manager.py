@@ -1,10 +1,12 @@
 import logging
+import numpy as np
 
 from typing import List, Dict, Union, Tuple
+from datetime import datetime, timedelta
+from sklearn.metrics.pairwise import cosine_similarity
 
 from goodai.src.memory.conversation_db import SessionDatabase
-from goodai.src.memory.memory import Memory
-
+from goodai.src.memory.memory import Memory, MEMORY_TYPE
 from goodai.src.models.tokenizer import Tokenizer
 
 logger = logging.getLogger()
@@ -32,40 +34,78 @@ class MemoryManager:
         """
         This method is responsible for managing memories on each interaction made.
 
-        This includes:
+        This includes
+            - Fetching the latest 5 memories.
+            - Fetching the top 5 most related memories.
             - Adding new memory to local buffer.
-            - Fetching the latest 10 memories from the local buffer.
-            - Fetching the top 10 most related memories stored in the session database.
 
         Args:
             user_input: user input to the LLM.
 
         Returns:
-            10 recent memories in the buffer.
-            10 relevant memories sorted by timestamp.
+            5 recent memories in the buffer.
+            5 relevant memories sorted by timestamp.
         """
         encoded_user_input = self.tokenizer.encode(user_input)
-        new_memory = Memory(user_input, encoded_user_input)
+
+        top_5_most_recent_memories = self.memory_buffer[-5:]
+        top_5_related_memories = self._get_relevant_memories(encoded_user_input)
+
+        new_timestamp = datetime.now()
+        new_memory = Memory(
+            user_input=user_input,
+            encoded_user_input=encoded_user_input,
+            memory_type=MEMORY_TYPE.NEW,
+            timestamp=new_timestamp,
+            expiration=new_timestamp + timedelta(days=2 * 30),
+        )
         self._save_memory(new_memory)
 
-        top_10_most_recent_memories = self.memory_buffer[-10:-1]
-
-        top_10_related_memories_in_raw_format = (
-            self.session_database.fetch_most_relevant_memories(
-                encoded_memory=encoded_user_input, number_of_records=10
-            )
-        )
-
-        top_10_related_memories = sorted(
-            self._process_memories_in_list(top_10_related_memories_in_raw_format),
-            key=lambda x: x.timestamp,
-        )
-        return top_10_most_recent_memories, top_10_related_memories
+        return top_5_most_recent_memories, top_5_related_memories
 
     def clear_session(self) -> None:
         """Clears session databases of the memory manager."""
         self.session_database.clear_database()
         self.memory_buffer = []
+
+    def _get_relevant_memories(
+        self, encoded_user_input: np.ndarray, number_of_records: int = 5
+    ) -> List[Memory]:
+        """
+        This method is responsible for fetching memories
+        present in the memory buffer that are relevant
+        to a given user input based on vector similarity.
+
+        Args:
+            encoded_user_input: User input encoded using the tokenizer.
+            number_of_records: Number of memories to return, Defaults to 5.
+        """
+        if not self.memory_buffer:
+            return []
+        else:
+            encoded_memories = [
+                memory.encoded_user_input for memory in self.memory_buffer
+            ]
+            reshaped_encoded_memory = encoded_user_input.reshape(1, -1)
+
+            similarities = np.squeeze(
+                cosine_similarity(reshaped_encoded_memory, encoded_memories)
+            )
+            if np.ndim(similarities) == 0:
+                similarities = [similarities]
+            else:
+                similarities = similarities.tolist()
+            pairs = [
+                (similarity, index)
+                for similarity, index in zip(similarities, range(len(similarities)))
+            ]
+            pairs_sorted = sorted(pairs, key=lambda x: x[0], reverse=True)
+            top_pairs = []
+            for _, index in pairs_sorted:
+                top_pairs.append(index)
+                if len(top_pairs) >= number_of_records:
+                    break
+            return [self.memory_buffer[index] for index in top_pairs]
 
     def _save_memory(self, new_memory: Memory) -> None:
         """
@@ -108,9 +148,7 @@ class MemoryManager:
 
     def _fetch_session(self) -> Union[List[Memory], List]:
         """Recall the latest session of the agent."""
-        latest_memories_in_raw_format = (
-            self.session_database.fetch_most_recent_memories()
-        )
+        latest_memories_in_raw_format = self.session_database.get_all_memories()
         return self._process_memories_in_list(latest_memories_in_raw_format)
 
     def _process_memories_in_dict(
