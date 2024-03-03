@@ -106,7 +106,7 @@ class OpenSourceModel(BaseModel):
         if response.startswith("Based") and "would be:" in response:
             return response.split("would be:")[1].strip()
         if response.startswith("Based") and "response" in response:
-            return response.split("response is:")[1].strip() 
+            return response.split("response is:")[1].strip()
         if response.startswith("Based") and "responds" in response:
             return response.split("responds:")[1].strip()
         return response

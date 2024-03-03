@@ -56,7 +56,6 @@ random_strings = [
 ]
 
 
-
 def mock_interactions(agent: Agent) -> None:
     """
     This function is used to mimic a normal conversation
