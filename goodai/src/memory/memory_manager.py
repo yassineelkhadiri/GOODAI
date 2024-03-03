@@ -71,7 +71,7 @@ class MemoryManager:
         """
         Create a memory from user input and
         check if the new memory is a duplicate
-        if the new memory is a duplicate then 
+        if the new memory is a duplicate then
         the older memory is  discarded
         otherwise it is saved in the local buffer
 
