@@ -60,3 +60,4 @@ Alternatively, you can refer to the notebooks:
 - [Duplicated memory](duplicate.ipynb)
 - [Episodic memory](episodic.ipynb)
 - [Temporary memory](temporary.ipynb)
+- [Contradictory memory](contradictory.ipynb)
