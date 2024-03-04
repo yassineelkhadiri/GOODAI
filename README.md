@@ -17,7 +17,7 @@ To set up and run the agent, follow these steps:
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yassineelkhadiri/GOODAI_TASK.git
+   git clone https://github.com/yassineelkhadiri/GOODAI.git 
    ```
 
 2. Create a `.env` file in the project directory.
@@ -52,9 +52,14 @@ To set up and run the agent, follow these steps:
 
 ## Usage
 
-To start an interaction with the `agent` or you can simply run 
+To start an interaction with the `agent` or you can simply run, this will use an open source model:
 ```bash
     python main.py
+```
+
+If you wish to use gpt-3.5-turbo, run the following command:
+```bash
+    python main.py --use-gpt
 ```
 Alternatively, you can refer to the notebooks:
 - [Duplicated memory](duplicate.ipynb)
